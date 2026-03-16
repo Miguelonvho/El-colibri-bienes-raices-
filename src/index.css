@@ -1,0 +1,161 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* === El Colibrí Design System === */
+    --background: 60 30% 98%;
+    --foreground: 220 20% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 20% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 15%;
+
+    /* Verde Colibrí */
+    --primary: 150 52% 36%;
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 150 52% 94%;
+    --primary-glow: 150 52% 28%;
+
+    /* Azul institucional */
+    --accent: 200 45% 38%;
+    --accent-foreground: 0 0% 100%;
+
+    --secondary: 60 10% 96%;
+    --secondary-foreground: 220 20% 20%;
+
+    --muted: 60 8% 94%;
+    --muted-foreground: 220 10% 50%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 13% 88%;
+    --input: 220 13% 88%;
+    --ring: 150 52% 36%;
+    --radius: 0.75rem;
+
+    /* Sidebar (unused but required) */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Custom tokens */
+    --surface-warm: 40 25% 97%;
+    --charcoal: 220 20% 15%;
+    --charcoal-light: 220 15% 30%;
+    --whatsapp: 142 70% 45%;
+
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(150 52% 36% / 0.08) 0%, hsl(200 45% 38% / 0.05) 100%);
+    --gradient-card: linear-gradient(180deg, transparent 50%, hsl(220 20% 10% / 0.85) 100%);
+    --gradient-cta: linear-gradient(135deg, hsl(150 52% 32%) 0%, hsl(150 52% 42%) 100%);
+
+    /* Shadows */
+    --shadow-card: 0 4px 24px -4px hsl(220 20% 15% / 0.12);
+    --shadow-card-hover: 0 16px 40px -8px hsl(220 20% 15% / 0.2);
+    --shadow-nav: 0 1px 0 hsl(220 13% 88%), 0 4px 20px -4px hsl(220 20% 15% / 0.06);
+    --shadow-wa: 0 8px 30px -4px hsl(142 70% 45% / 0.5);
+    --shadow-primary: 0 8px 24px -4px hsl(150 52% 36% / 0.4);
+  }
+
+  .dark {
+    --background: 220 20% 8%;
+    --foreground: 60 20% 96%;
+    --card: 220 20% 12%;
+    --card-foreground: 60 20% 96%;
+    --popover: 220 20% 12%;
+    --popover-foreground: 60 20% 96%;
+    --primary: 150 52% 45%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 15% 18%;
+    --secondary-foreground: 60 20% 90%;
+    --muted: 220 15% 18%;
+    --muted-foreground: 220 10% 60%;
+    --accent: 200 45% 50%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 62.8% 40%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 15% 22%;
+    --input: 220 15% 22%;
+    --ring: 150 52% 45%;
+    --sidebar-background: 220 20% 8%;
+    --sidebar-foreground: 60 20% 96%;
+    --sidebar-primary: 150 52% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 15% 18%;
+    --sidebar-accent-foreground: 60 20% 90%;
+    --sidebar-border: 220 15% 22%;
+    --sidebar-ring: 150 52% 45%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    letter-spacing: -0.03em;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+
+  .gradient-card-overlay {
+    background: var(--gradient-card);
+  }
+
+  .gradient-cta {
+    background: var(--gradient-cta);
+  }
+
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+
+  .shadow-card-hover {
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  .shadow-nav {
+    box-shadow: var(--shadow-nav);
+  }
+
+  .shadow-wa {
+    box-shadow: var(--shadow-wa);
+  }
+
+  .shadow-primary {
+    box-shadow: var(--shadow-primary);
+  }
+}
