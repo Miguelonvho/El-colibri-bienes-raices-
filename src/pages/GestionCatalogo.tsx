@@ -747,14 +747,13 @@ function TarjetaGestion({
 
         {/* Acciones */}
         <div className="flex gap-2 mt-auto">
-          {/* Ver detalle público */}
+          {/* Ver más: navega a la vista de detalle del inmueble (misma página que el catálogo público) */}
           <Link
             to={`/inmueble/${propiedad.id}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center px-3 py-2 rounded-xl text-xs font-semibold bg-muted text-muted-foreground hover:bg-border transition-colors"
+            className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-semibold bg-muted text-muted-foreground hover:bg-border transition-colors"
           >
             <Eye size={13} />
+            Ver más
           </Link>
           {/* Editar */}
           <button
