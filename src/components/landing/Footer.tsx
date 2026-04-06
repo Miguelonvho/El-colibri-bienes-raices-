@@ -1,16 +1,28 @@
+/**
+ * ============================================================
+ * COMPONENTE: Footer (Pie de Página)
+ * ============================================================
+ * Pie de página presente en todas las vistas del sitio.
+ * Incluye: logo, descripción, navegación y datos de contacto.
+ * ============================================================
+ */
+
 import { MessageCircle, MapPin, Phone, Instagram } from "lucide-react";
+import { Link } from "react-router-dom";
 import logoElColibri from "@/assets/logo-el-colibri.png";
 
+// Enlace de WhatsApp directo
 const whatsappNumber = "543794215684";
-const message = encodeURIComponent("Hola! Me interesa información sobre alquileres.");
-const WA_LINK = `https://wa.me/${whatsappNumber}?text=${message}`;
+const mensaje = encodeURIComponent("Hola! Me interesa información sobre alquileres.");
+const WA_LINK = `https://wa.me/${whatsappNumber}?text=${mensaje}`;
 
 export default function Footer() {
   return (
     <footer className="bg-foreground text-background/70 px-4 sm:px-6 py-14">
       <div className="max-w-7xl mx-auto">
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
-          {/* Brand */}
+
+          {/* ── Marca / Descripción ─────────────────── */}
           <div className="lg:col-span-2">
             <img
               src={logoElColibri}
@@ -23,16 +35,17 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Links */}
+          {/* ── Navegación ──────────────────────────── */}
           <div>
             <h4 className="text-background font-bold text-sm mb-4">Navegación</h4>
             <ul className="space-y-2 text-sm">
+              {/* Links de secciones de la landing */}
               {[
-                { label: "Propiedades", href: "#propiedades" },
-                { label: "Nosotros", href: "#nosotros" },
-                { label: "Por qué elegirnos", href: "#beneficios" },
-                { label: "Preguntas frecuentes", href: "#faq" },
-                { label: "Contacto", href: "#contacto" },
+                { label: "Propiedades", href: "/#propiedades" },
+                { label: "Nosotros", href: "/#nosotros" },
+                { label: "Por qué elegirnos", href: "/#beneficios" },
+                { label: "Preguntas frecuentes", href: "/#faq" },
+                { label: "Contacto", href: "/#contacto" },
               ].map((l) => (
                 <li key={l.href}>
                   <a href={l.href} className="hover:text-primary transition-colors">
@@ -40,41 +53,53 @@ export default function Footer() {
                   </a>
                 </li>
               ))}
+
+              {/* Separador */}
+              <li className="border-t border-background/10 pt-2 mt-2">
+                {/* Link interno: Catálogo (usa React Router para evitar recarga) */}
+                <Link to="/catalogo" className="hover:text-primary transition-colors">
+                  Catálogo completo
+                </Link>
+              </li>
             </ul>
           </div>
 
-          {/* Contact */}
+          {/* ── Contacto ─────────────────────────────── */}
           <div>
             <h4 className="text-background font-bold text-sm mb-4">Contacto</h4>
             <ul className="space-y-3 text-sm">
+              {/* Dirección con enlace a Google Maps */}
               <li className="flex items-start gap-2">
                 <MapPin size={14} className="mt-0.5 text-primary flex-shrink-0" />
-                <a 
-                  href="https://www.google.com/maps/search/?api=1&query=Av.+3+de+Abril+576,+Corrientes+Capital,+Argentina" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=Av.+3+de+Abril+576,+Corrientes+Capital,+Argentina"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="hover:text-primary transition-colors"
                 >
                   Av. 3 de Abril 576, Corrientes Capital, Argentina
                 </a>
               </li>
+              {/* Instagram */}
               <li className="flex items-center gap-2">
                 <Instagram size={14} className="text-primary flex-shrink-0" />
-                <a 
-                  href="https://www.instagram.com/elcolibribienesraices" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
+                <a
+                  href="https://www.instagram.com/elcolibribienesraices"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="hover:text-primary transition-colors"
                 >
                   @elcolibribienesraices
                 </a>
               </li>
+              {/* Teléfono */}
               <li className="flex items-center gap-2">
                 <Phone size={14} className="text-primary flex-shrink-0" />
                 <a href="tel:+543794215684" className="hover:text-primary transition-colors">
                   +54 379 4215684
                 </a>
               </li>
+              {/* WhatsApp directo */}
               <li>
                 <a
                   href={WA_LINK}
@@ -90,6 +115,7 @@ export default function Footer() {
           </div>
         </div>
 
+        {/* ── Copyright ────────────────────────────── */}
         <div className="border-t border-background/10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-background/40">
           <p>© {new Date().getFullYear()} El Colibrí Bienes Raíces. Todos los derechos reservados.</p>
           <p>Corrientes Capital, Argentina</p>

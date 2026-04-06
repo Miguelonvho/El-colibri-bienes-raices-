@@ -122,6 +122,17 @@
   }
 }
 
+@layer components {
+  /* Campo de formulario reutilizable (usado en el panel de gestión) */
+  .campo-formulario {
+    @apply w-full px-4 py-2.5 rounded-xl border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 transition-shadow;
+  }
+
+  select.campo-formulario {
+    @apply cursor-pointer;
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
