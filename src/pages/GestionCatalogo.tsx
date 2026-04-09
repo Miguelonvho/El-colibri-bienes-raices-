@@ -51,12 +51,14 @@ import {
   Maximize2,
   DoorOpen,
   Banknote,
+  Loader2,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 // import { useNavigate } from "react-router-dom"; // ← Descomentar para redirección de auth
 
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
+import MapaEditable from "@/components/MapaEditable";
 import {
   obtenerPropiedades,
   guardarPropiedades,
@@ -128,8 +130,9 @@ const formularioVacio: CamposFormulario = {
   superficie: "",
   ambientes: undefined,
   destacada: false,
-  // Coordenadas para el mapa (opcionales — si no se completan, el mapa no se muestra)
-  ubicacion: undefined,
+  // Coordenadas por defecto: centro de Corrientes Capital.
+  // El admin puede mover el marcador o buscar la dirección exacta.
+  ubicacion: { lat: -27.481, lng: -58.8253 },
 };
 
 // ─────────────────────────────────────────────
@@ -886,6 +889,75 @@ function ModalFormulario({
   // Estado del modo de carga de imagen: "url" o "archivo"
   const [modoImagen, setModoImagen] = useState<"url" | "archivo">("url");
 
+  // ── Geocodificación ──────────────────────────────────────────────────────────
+  // Estado de carga y error para la búsqueda de coordenadas por dirección
+
+  /** Indica si hay una búsqueda de coordenadas en curso */
+  const [geocodificando, setGeocodificando] = useState(false);
+
+  /** Mensaje de error si la geocodificación falla o no encuentra resultados */
+  const [errorGeocodificacion, setErrorGeocodificacion] = useState<string | null>(null);
+
+  /**
+   * Sube cada vez que la geocodificación completa con éxito.
+   * MapaEditable escucha este valor para saber cuándo volar hacia la nueva ubicación.
+   */
+  const [claveGeocoding, setClaveGeocoding] = useState(0);
+
+  /**
+   * Busca las coordenadas geográficas de la propiedad usando la API de Nominatim
+   * (OpenStreetMap). Toma la dirección del campo "subtitulo" del formulario.
+   *
+   * Si encuentra la dirección, actualiza el campo "ubicacion" del formulario,
+   * lo que a su vez hace que el MapaEditable vuele animadamente hacia ese punto.
+   *
+   * Nominatim es gratuito y no requiere clave de API. Límite: 1 req/seg.
+   * Para uso de prototipo con un solo admin, esto es más que suficiente.
+   *
+   * TODO (mejora): agregar debounce si se conecta a un input con autocomplete.
+   */
+  const buscarCoordenadas = async () => {
+    const direccion = formulario.subtitulo.trim();
+    if (!direccion) {
+      setErrorGeocodificacion("Primero ingresá la dirección en el campo de arriba.");
+      return;
+    }
+    setGeocodificando(true);
+    setErrorGeocodificacion(null);
+    try {
+      // Si la dirección no menciona Corrientes, la agregamos como contexto para
+      // que Nominatim encuentre calles locales sin ambigüedad (ej: "Colombia 920"
+      // puede existir en muchas ciudades de Argentina).
+      const mencionaCorrientes = /corrientes/i.test(direccion);
+      const consultaCompleta = mencionaCorrientes ? direccion : `${direccion}, Corrientes, Argentina`;
+      const consulta = encodeURIComponent(consultaCompleta);
+      const respuesta = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${consulta}&format=json&limit=1&countrycodes=ar`,
+        { headers: { "Accept-Language": "es" } }
+      );
+      const datos = (await respuesta.json()) as Array<{ lat: string; lon: string }>;
+
+      if (datos.length === 0) {
+        setErrorGeocodificacion(
+          "No se encontró la dirección. Probá con más detalle (ej: 'Colombia 920, Corrientes') o marcá la ubicación directamente en el mapa."
+        );
+        return;
+      }
+
+      // Actualizamos la ubicación y subimos la clave para que el mapa vuele hacia ahí
+      onCambiarCampo("ubicacion", {
+        lat: parseFloat(datos[0].lat),
+        lng: parseFloat(datos[0].lon),
+      });
+      setClaveGeocoding((c) => c + 1);
+    } catch {
+      setErrorGeocodificacion("Error al buscar la dirección. Verificá tu conexión a internet.");
+    } finally {
+      setGeocodificando(false);
+    }
+  };
+  // ────────────────────────────────────────────────────────────────────────────
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -1035,16 +1107,28 @@ function ModalFormulario({
 
           {/* Dirección */}
           <div>
-            <label className="block text-sm font-semibold text-foreground mb-1.5">
+            <label className="block text-sm font-semibold text-foreground mb-1.5 flex items-center gap-2">
               Dirección <span className="text-destructive">*</span>
+              {/* Spinner que aparece mientras se buscan las coordenadas */}
+              {geocodificando && <Loader2 size={13} className="animate-spin text-primary" />}
             </label>
             <input
               type="text"
               placeholder="Ej: Colombia 920, Corrientes Capital"
               value={formulario.subtitulo}
               onChange={(e) => onCambiarCampo("subtitulo", e.target.value)}
+              onKeyDown={(e) => {
+                // Al presionar Enter, buscamos las coordenadas en el mapa
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  buscarCoordenadas();
+                }
+              }}
               className="campo-formulario"
             />
+            <p className="text-xs text-muted-foreground mt-1">
+              Presioná Enter para buscar la ubicación en el mapa.
+            </p>
           </div>
 
           {/* Descripción */}
@@ -1145,35 +1229,50 @@ function ModalFormulario({
             </div>
           </label>
 
-          {/* ── Ubicación en el mapa ────────────────
-           * Campos opcionales para ingresar las coordenadas geográficas
-           * de la propiedad. Cuando se completan, aparece un mapa interactivo
-           * en la página de detalle del inmueble ("Ver más").
-           *
-           * Cómo obtener las coordenadas:
-           *   1. Buscar la dirección en Google Maps o maps.google.com
-           *   2. Hacer clic derecho sobre el punto exacto en el mapa
-           *   3. Copiar los números que aparecen primero (latitud, luego longitud)
-           *   Ejemplo para Corrientes Capital: -27.4844, -58.7943
-           *
-           * Si se dejan vacíos, el mapa simplemente no aparece en el detalle.
-           *
-           * TODO (mejora futura): Agregar botón "Buscar coordenadas" que use la API
-           * de Nominatim para geocodificar la dirección automáticamente.
+          {/* ── Ubicación en el mapa ────────────────────────────────────────────────
+           * El admin puede marcar la ubicación del inmueble de tres formas:
+           *   1. Botón "Buscar dirección": geocodifica la dirección ya ingresada
+           *      usando la API de Nominatim (OpenStreetMap, gratuita y sin clave).
+           *   2. Clic en el mapa: coloca o mueve el marcador al punto clickeado.
+           *   3. Campos manuales de lat/lng: para corrección exacta de coordenadas.
+           * El marcador siempre se puede arrastrar para ajustar la posición final.
+           * Si no se completa, el mapa simplemente no aparece en el detalle público.
            */}
           <div>
             <label className="block text-sm font-semibold text-foreground mb-1">
               Ubicación en el mapa
               <span className="ml-1.5 text-xs font-normal text-muted-foreground">(opcional)</span>
             </label>
-            <p className="text-xs text-muted-foreground mb-2.5">
-              Ingresá las coordenadas para mostrar el mapa en el detalle del inmueble.{" "}
-              <span className="font-medium">
-                Buscá la dirección en Google Maps → clic derecho → copiá los números.
-              </span>
+
+            {/* Hint: las dos formas de marcar la ubicación */}
+            <p className="text-xs text-muted-foreground mb-3">
+              Hacé clic en el mapa para colocar el marcador, o presioná Enter en el campo Dirección para buscarlo automáticamente.
             </p>
-            <div className="grid grid-cols-2 gap-3">
-              {/* Campo Latitud */}
+
+            {/* Error de geocodificación (si ocurre) */}
+            {errorGeocodificacion && (
+              <p className="text-xs text-destructive font-medium mb-2.5 flex items-start gap-1">
+                <span className="mt-px">⚠</span>
+                {errorGeocodificacion}
+              </p>
+            )}
+
+            {/*
+             * Mapa interactivo:
+             *   - Clic en el mapa → coloca/mueve el marcador y actualiza lat/lng
+             *   - Marcador draggable → arrastrar para ajustar posición
+             *   - Si la geocodificación encuentra la dirección, el mapa vuela hacia ahí
+             */}
+            <MapaEditable
+              ubicacion={formulario.ubicacion}
+              nombrePropiedad={formulario.titulo || "Nueva propiedad"}
+              onChange={(pos) => onCambiarCampo("ubicacion", pos)}
+              claveGeocoding={claveGeocoding}
+              altura="230px"
+            />
+
+            {/* Campos manuales de coordenadas — para corrección fina o ingreso directo */}
+            <div className="grid grid-cols-2 gap-3 mt-3">
               <div>
                 <label className="block text-xs font-semibold text-muted-foreground mb-1">
                   Latitud
@@ -1186,18 +1285,15 @@ function ModalFormulario({
                   onChange={(e) => {
                     const lat = parseFloat(e.target.value);
                     if (e.target.value === "" || e.target.value === "-") {
-                      // Si borra el campo, quitamos la ubicación completa si tampoco hay lng
                       const lngActual = formulario.ubicacion?.lng;
                       onCambiarCampo("ubicacion", lngActual !== undefined ? { lat: 0, lng: lngActual } : undefined);
                     } else if (!isNaN(lat)) {
-                      // Actualizamos solo la latitud, manteniendo la longitud actual
                       onCambiarCampo("ubicacion", { lat, lng: formulario.ubicacion?.lng ?? 0 });
                     }
                   }}
                   className="campo-formulario"
                 />
               </div>
-              {/* Campo Longitud */}
               <div>
                 <label className="block text-xs font-semibold text-muted-foreground mb-1">
                   Longitud
@@ -1213,7 +1309,6 @@ function ModalFormulario({
                       const latActual = formulario.ubicacion?.lat;
                       onCambiarCampo("ubicacion", latActual !== undefined ? { lat: latActual, lng: 0 } : undefined);
                     } else if (!isNaN(lng)) {
-                      // Actualizamos solo la longitud, manteniendo la latitud actual
                       onCambiarCampo("ubicacion", { lat: formulario.ubicacion?.lat ?? 0, lng });
                     }
                   }}
@@ -1221,15 +1316,25 @@ function ModalFormulario({
                 />
               </div>
             </div>
-            {/* Indicador visual: mapa configurado o no */}
+
+            {/* Indicador de estado y botón para limpiar la ubicación */}
             {formulario.ubicacion && formulario.ubicacion.lat !== 0 && formulario.ubicacion.lng !== 0 ? (
-              <p className="text-xs text-primary font-semibold mt-1.5 flex items-center gap-1">
-                <MapPin size={11} />
-                Mapa configurado: {formulario.ubicacion.lat.toFixed(4)}, {formulario.ubicacion.lng.toFixed(4)}
-              </p>
+              <div className="flex items-center justify-between mt-1.5">
+                <p className="text-xs text-primary font-semibold flex items-center gap-1">
+                  <MapPin size={11} />
+                  Ubicación marcada: {formulario.ubicacion.lat.toFixed(4)}, {formulario.ubicacion.lng.toFixed(4)}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => onCambiarCampo("ubicacion", undefined)}
+                  className="text-xs text-muted-foreground hover:text-destructive transition-colors"
+                >
+                  Quitar ubicación
+                </button>
+              </div>
             ) : (
               <p className="text-xs text-muted-foreground mt-1.5">
-                Sin coordenadas — el mapa no se mostrará en el detalle.
+                Sin coordenadas — el mapa no se mostrará en el detalle del inmueble.
               </p>
             )}
           </div>
