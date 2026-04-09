@@ -57,6 +57,15 @@ export interface Propiedad {
    * Para restaurarla, el admin puede reactivarla desde ese panel.
    */
   dadaDeBaja?: boolean;
+  /**
+   * Coordenadas geográficas de la propiedad para mostrar en el mapa (Leaflet).
+   * Se obtienen buscando la dirección en Google Maps u OpenStreetMap y copiando
+   * las coordenadas. Ejemplo: { lat: -27.4844, lng: -58.7943 }
+   *
+   * TODO (backend): Cuando haya servidor, se puede agregar geocodificación automática
+   * usando la dirección del campo `subtitulo` con la API de Nominatim (OpenStreetMap).
+   */
+  ubicacion?: { lat: number; lng: number };
 }
 
 // ─────────────────────────────────────────────
@@ -89,6 +98,8 @@ export const propiedadesIniciales: Propiedad[] = [
     superficie: "65 m²",
     ambientes: 3,
     destacada: true,
+    // Coordenadas de Colombia al 920, Corrientes Capital
+    ubicacion: { lat: -27.4844, lng: -58.7943 },
   },
   // ── Propiedad 2 ──────────────────────────────
   {
@@ -105,6 +116,8 @@ export const propiedadesIniciales: Propiedad[] = [
     superficie: "72 m²",
     ambientes: 3,
     destacada: true,
+    // Coordenadas de Colombia al 800, Corrientes Capital
+    ubicacion: { lat: -27.4851, lng: -58.7956 },
   },
   // ── Propiedad 3 ──────────────────────────────
   {
@@ -120,6 +133,8 @@ export const propiedadesIniciales: Propiedad[] = [
     precio: "Consultar",
     superficie: "18 m²",
     destacada: true,
+    // Coordenadas de Av. 3 de Abril 1038, Corrientes Capital
+    ubicacion: { lat: -27.4721, lng: -58.8071 },
   },
 
   // ── Propiedades de demostración ───────────────
@@ -141,6 +156,8 @@ export const propiedadesIniciales: Propiedad[] = [
     superficie: "38 m²",
     ambientes: 1,
     destacada: false,
+    // Coordenadas de San Juan 450, Corrientes Capital
+    ubicacion: { lat: -27.4732, lng: -58.8340 },
   },
   // ── Propiedad 5 ──────────────────────────────
   {
@@ -157,6 +174,8 @@ export const propiedadesIniciales: Propiedad[] = [
     superficie: "150 m²",
     ambientes: 5,
     destacada: false,
+    // Coordenadas de Italia 234, Corrientes Capital
+    ubicacion: { lat: -27.4882, lng: -58.8265 },
   },
   // ── Propiedad 6 ──────────────────────────────
   {
@@ -172,6 +191,8 @@ export const propiedadesIniciales: Propiedad[] = [
     precio: "Consultar",
     superficie: "80 m²",
     destacada: false,
+    // Coordenadas de 9 de Julio 800, Corrientes Capital
+    ubicacion: { lat: -27.4758, lng: -58.8213 },
   },
   // ── Propiedad 7 ──────────────────────────────
   {
@@ -188,6 +209,8 @@ export const propiedadesIniciales: Propiedad[] = [
     superficie: "52 m²",
     ambientes: 2,
     destacada: false,
+    // Coordenadas de Junín 560, Corrientes Capital
+    ubicacion: { lat: -27.4698, lng: -58.8372 },
   },
   // ── Propiedad 8 ──────────────────────────────
   {
@@ -204,6 +227,8 @@ export const propiedadesIniciales: Propiedad[] = [
     superficie: "180 m²",
     ambientes: 5,
     destacada: false,
+    // Coordenadas de Santa Fe 1200, Corrientes Capital
+    ubicacion: { lat: -27.4825, lng: -58.8142 },
   },
   // ── Propiedad 9 ──────────────────────────────
   {
@@ -219,6 +244,8 @@ export const propiedadesIniciales: Propiedad[] = [
     precio: "Consultar",
     superficie: "45 m²",
     destacada: false,
+    // Coordenadas de Pellegrini 890, Corrientes Capital
+    ubicacion: { lat: -27.4775, lng: -58.8274 },
   },
 ];
 

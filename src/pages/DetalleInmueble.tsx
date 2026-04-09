@@ -32,6 +32,7 @@ import {
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import FloatingWhatsApp from "@/components/landing/FloatingWhatsApp";
+import MapaPropiedad from "@/components/MapaPropiedad";
 import { obtenerPropiedad } from "@/data/propiedades";
 
 // Configuración de WhatsApp
@@ -167,6 +168,40 @@ export default function DetalleInmueble() {
                       </span>
                     ))}
                   </div>
+                </motion.div>
+              )}
+
+              {/* ── Mapa de ubicación ─────────────────────
+               * Solo se muestra si la propiedad tiene coordenadas cargadas.
+               * Las coordenadas se ingresan desde el panel de gestión (/gestion)
+               * en los campos "Latitud" y "Longitud".
+               *
+               * Si la propiedad no tiene ubicacion definida, este bloque
+               * simplemente no se renderiza (sin errores ni espacios vacíos).
+               */}
+              {propiedad.ubicacion && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                >
+                  <h2 className="text-lg font-bold text-foreground mb-3 flex items-center gap-2">
+                    <MapPin size={18} className="text-primary" />
+                    Ubicación
+                  </h2>
+                  {/* Componente del mapa Leaflet con las coordenadas de la propiedad */}
+                  <MapaPropiedad
+                    lat={propiedad.ubicacion.lat}
+                    lng={propiedad.ubicacion.lng}
+                    nombrePropiedad={propiedad.titulo}
+                    direccion={propiedad.subtitulo}
+                    altura="300px"
+                  />
+                  {/* Dirección textual debajo del mapa */}
+                  <p className="text-sm text-muted-foreground mt-2 flex items-center gap-1.5">
+                    <MapPin size={13} className="text-primary flex-shrink-0" />
+                    {propiedad.subtitulo}
+                  </p>
                 </motion.div>
               )}
 

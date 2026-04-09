@@ -128,6 +128,8 @@ const formularioVacio: CamposFormulario = {
   superficie: "",
   ambientes: undefined,
   destacada: false,
+  // Coordenadas para el mapa (opcionales — si no se completan, el mapa no se muestra)
+  ubicacion: undefined,
 };
 
 // ─────────────────────────────────────────────
@@ -281,6 +283,8 @@ export default function GestionCatalogo() {
       superficie: propiedad.superficie ?? "",
       ambientes: propiedad.ambientes,
       destacada: propiedad.destacada ?? false,
+      // Cargamos las coordenadas existentes de la propiedad para editarlas
+      ubicacion: propiedad.ubicacion,
     });
     setInsigniaTexto("");
     setModalAbierto(true);
@@ -366,7 +370,7 @@ export default function GestionCatalogo() {
 
   const cambiarCampo = (
     campo: keyof CamposFormulario,
-    valor: string | number | boolean | string[]
+    valor: string | number | boolean | string[] | { lat: number; lng: number } | undefined
   ) => {
     setFormulario((prev) => ({ ...prev, [campo]: valor }));
   };
@@ -868,7 +872,7 @@ function ModalFormulario({
   formulario: CamposFormulario;
   insigniaTexto: string;
   cargandoImagen: boolean;
-  onCambiarCampo: (campo: keyof CamposFormulario, valor: string | number | boolean | string[]) => void;
+  onCambiarCampo: (campo: keyof CamposFormulario, valor: string | number | boolean | string[] | { lat: number; lng: number } | undefined) => void;
   onCambiarInsigniaTexto: (texto: string) => void;
   onAgregarInsignia: () => void;
   onQuitarInsignia: (insignia: string) => void;
@@ -1140,6 +1144,95 @@ function ModalFormulario({
               <p className="text-xs text-muted-foreground">Aparecerá en la sección de inicio de la landing (solo si está Disponible).</p>
             </div>
           </label>
+
+          {/* ── Ubicación en el mapa ────────────────
+           * Campos opcionales para ingresar las coordenadas geográficas
+           * de la propiedad. Cuando se completan, aparece un mapa interactivo
+           * en la página de detalle del inmueble ("Ver más").
+           *
+           * Cómo obtener las coordenadas:
+           *   1. Buscar la dirección en Google Maps o maps.google.com
+           *   2. Hacer clic derecho sobre el punto exacto en el mapa
+           *   3. Copiar los números que aparecen primero (latitud, luego longitud)
+           *   Ejemplo para Corrientes Capital: -27.4844, -58.7943
+           *
+           * Si se dejan vacíos, el mapa simplemente no aparece en el detalle.
+           *
+           * TODO (mejora futura): Agregar botón "Buscar coordenadas" que use la API
+           * de Nominatim para geocodificar la dirección automáticamente.
+           */}
+          <div>
+            <label className="block text-sm font-semibold text-foreground mb-1">
+              Ubicación en el mapa
+              <span className="ml-1.5 text-xs font-normal text-muted-foreground">(opcional)</span>
+            </label>
+            <p className="text-xs text-muted-foreground mb-2.5">
+              Ingresá las coordenadas para mostrar el mapa en el detalle del inmueble.{" "}
+              <span className="font-medium">
+                Buscá la dirección en Google Maps → clic derecho → copiá los números.
+              </span>
+            </p>
+            <div className="grid grid-cols-2 gap-3">
+              {/* Campo Latitud */}
+              <div>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1">
+                  Latitud
+                </label>
+                <input
+                  type="number"
+                  placeholder="-27.4844"
+                  step="any"
+                  value={formulario.ubicacion?.lat ?? ""}
+                  onChange={(e) => {
+                    const lat = parseFloat(e.target.value);
+                    if (e.target.value === "" || e.target.value === "-") {
+                      // Si borra el campo, quitamos la ubicación completa si tampoco hay lng
+                      const lngActual = formulario.ubicacion?.lng;
+                      onCambiarCampo("ubicacion", lngActual !== undefined ? { lat: 0, lng: lngActual } : undefined);
+                    } else if (!isNaN(lat)) {
+                      // Actualizamos solo la latitud, manteniendo la longitud actual
+                      onCambiarCampo("ubicacion", { lat, lng: formulario.ubicacion?.lng ?? 0 });
+                    }
+                  }}
+                  className="campo-formulario"
+                />
+              </div>
+              {/* Campo Longitud */}
+              <div>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1">
+                  Longitud
+                </label>
+                <input
+                  type="number"
+                  placeholder="-58.7943"
+                  step="any"
+                  value={formulario.ubicacion?.lng ?? ""}
+                  onChange={(e) => {
+                    const lng = parseFloat(e.target.value);
+                    if (e.target.value === "" || e.target.value === "-") {
+                      const latActual = formulario.ubicacion?.lat;
+                      onCambiarCampo("ubicacion", latActual !== undefined ? { lat: latActual, lng: 0 } : undefined);
+                    } else if (!isNaN(lng)) {
+                      // Actualizamos solo la longitud, manteniendo la latitud actual
+                      onCambiarCampo("ubicacion", { lat: formulario.ubicacion?.lat ?? 0, lng });
+                    }
+                  }}
+                  className="campo-formulario"
+                />
+              </div>
+            </div>
+            {/* Indicador visual: mapa configurado o no */}
+            {formulario.ubicacion && formulario.ubicacion.lat !== 0 && formulario.ubicacion.lng !== 0 ? (
+              <p className="text-xs text-primary font-semibold mt-1.5 flex items-center gap-1">
+                <MapPin size={11} />
+                Mapa configurado: {formulario.ubicacion.lat.toFixed(4)}, {formulario.ubicacion.lng.toFixed(4)}
+              </p>
+            ) : (
+              <p className="text-xs text-muted-foreground mt-1.5">
+                Sin coordenadas — el mapa no se mostrará en el detalle.
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Pie del modal */}
