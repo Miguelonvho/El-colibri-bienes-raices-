@@ -120,7 +120,7 @@ export default function DetalleInmueble() {
 
           {/* Botón volver — debajo de las migas, arriba a la izquierda */}
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => navigate('/catalogo')}
             className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground border border-border rounded-full px-4 py-1.5 hover:text-foreground hover:border-foreground/40 transition-colors mb-8"
           >
             <ArrowLeft size={14} />
