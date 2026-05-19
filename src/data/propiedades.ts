@@ -17,8 +17,47 @@ import colombia920 from "@/assets/colombia-920.jpg";
 import colombia800 from "@/assets/colombia-800.jpg";
 import av3deAbril from "@/assets/avenida-3-de-abril-1038.jpg";
 
+// ── Imágenes Lote 55 ──────────────────────────────
+import img1l55 from "@/assets/lote-55/img1l55.jpeg";
+import img2l55 from "@/assets/lote-55/img2l55.jpeg";
+import img3l55 from "@/assets/lote-55/img3l55.jpeg";
+import img4l55 from "@/assets/lote-55/img4l55.jpeg";
+import img5l55 from "@/assets/lote-55/img5l55.jpeg";
+import img6l55 from "@/assets/lote-55/img6l55.jpeg";
+import img7l55 from "@/assets/lote-55/img7l55.jpeg";
+import img8l55 from "@/assets/lote-55/img8l55.jpeg";
+import img9l55 from "@/assets/lote-55/img9l55.jpeg";
+import img10l55 from "@/assets/lote-55/img10l55.jpeg";
+import img11l55 from "@/assets/lote-55/img11l55.jpeg";
+import img12l55 from "@/assets/lote-55/img12l55.jpeg";
+import img13l55 from "@/assets/lote-55/img13l55.jpeg";
+
+// ── Imágenes Lote 85 ──────────────────────────────
+import img1lote85 from "@/assets/lote-85/img1lote85.jpeg";
+import img2lote85 from "@/assets/lote-85/img2lote85.jpeg";
+import img3lote85 from "@/assets/lote-85/img3lote85.jpeg";
+import img4lote85 from "@/assets/lote-85/img4lote85.jpeg";
+import img5lote85 from "@/assets/lote-85/img5lote85.jpeg";
+import img6lote85 from "@/assets/lote-85/img6lote85.jpeg";
+import img7lote85 from "@/assets/lote-85/img7lote85.jpeg";
+import img8lote85 from "@/assets/lote-85/img8lote85.jpeg";
+import img9lote85 from "@/assets/lote-85/img9lote85.jpeg";
+import img10lote85 from "@/assets/lote-85/img10lote85.jpeg";
+import img11lote85 from "@/assets/lote-85/img11lote85.jpeg";
+import img12lote85 from "@/assets/lote-85/img12lote85.jpeg";
+import img13lote85 from "@/assets/lote-85/img13lote85.jpeg";
+
 /** Clave usada para guardar/leer el catálogo en el navegador */
 const CLAVE_ALMACENAMIENTO = "colibri_propiedades";
+
+/**
+ * Versión del catálogo hardcodeado.
+ * Incrementar este número cada vez que se agreguen o modifiquen propiedades
+ * en `propiedadesIniciales`. Al detectar un desajuste con lo guardado en
+ * localStorage, el sistema descarta el caché y carga los datos nuevos.
+ */
+const DATA_VERSION = "3";
+const CLAVE_VERSION = "colibri_version";
 
 // ─────────────────────────────────────────────
 // TIPO: Propiedad
@@ -58,6 +97,11 @@ export interface Propiedad {
    */
   dadaDeBaja?: boolean;
   /**
+   * Galería de imágenes para el carrusel en la vista de detalle.
+   * Cuando está presente, reemplaza la imagen única en el encabezado del detalle.
+   */
+  galeria?: string[];
+  /**
    * Coordenadas geográficas de la propiedad para mostrar en el mapa (Leaflet).
    * Se obtienen buscando la dirección en Google Maps u OpenStreetMap y copiando
    * las coordenadas. Ejemplo: { lat: -27.4844, lng: -58.7943 }
@@ -73,13 +117,7 @@ export interface Propiedad {
 // ─────────────────────────────────────────────
 
 /**
- * Catálogo inicial con 9 propiedades.
- *
- * - Las primeras 3 usan imágenes reales del proyecto.
- * - Las 6 siguientes usan imágenes de https://picsum.photos (servicio de
- *   imágenes de placeholder gratuito). Reemplazar por fotos reales cuando
- *   estén disponibles.
- *
+ * Catálogo con 5 propiedades reales.
  * Las propiedades marcadas con `destacada: true` aparecen en el inicio.
  */
 export const propiedadesIniciales: Propiedad[] = [
@@ -137,115 +175,45 @@ export const propiedadesIniciales: Propiedad[] = [
     ubicacion: { lat: -27.4721, lng: -58.8071 },
   },
 
-  // ── Propiedades de demostración ───────────────
-  // NOTA: Las imágenes a continuación son placeholders de https://picsum.photos
-  // Reemplazar las URLs por las fotos reales de cada propiedad.
-
-  // ── Propiedad 4 ──────────────────────────────
+  // ── Propiedad 10: Casa en Venta – Lote 55 ────
   {
-    id: 4,
-    imagen: "https://picsum.photos/seed/colibri-monoambiente/800/600",
-    titulo: "Monoambiente Moderno",
-    subtitulo: "San Juan 450, Corrientes Capital",
+    id: 10,
+    imagen: img1l55,
+    titulo: "Casa en Venta – Lote 55",
+    subtitulo: "Catalinas Country, Corrientes",
     descripcion:
-      "Monoambiente completamente equipado en pleno centro. Cocina integrada, baño completo y balcón con vista a la calle. Ideal para profesional o estudiante.",
-    insignias: ["Balcón", "Cocina equipada", "Zona céntrica"],
-    etiqueta: "Disponible",
-    tipo: "Departamento",
-    precio: "Consultar",
-    superficie: "38 m²",
-    ambientes: 1,
-    destacada: false,
-    // Coordenadas de San Juan 450, Corrientes Capital
-    ubicacion: { lat: -27.4732, lng: -58.8340 },
-  },
-  // ── Propiedad 5 ──────────────────────────────
-  {
-    id: 5,
-    imagen: "https://picsum.photos/seed/colibri-casafamiliar/800/600",
-    titulo: "Casa Familiar 3 Dormitorios",
-    subtitulo: "Italia 234, Corrientes Capital",
-    descripcion:
-      "Amplia casa con patio, quincho y garage. Tres dormitorios, living-comedor espacioso y dos baños completos. Barrio residencial tranquilo con excelente acceso.",
-    insignias: ["3 Dormitorios", "Patio y quincho", "Garage"],
+      "Casa a estrenar ubicada en Catalinas Country, sobre un terreno de 1030 m². La propiedad cuenta con 176 m² construidos, espacios amplios y una distribución pensada para el confort y la vida al aire libre. Dispone de pileta y solárium, en un entorno tranquilo a pocos minutos de Corrientes Capital, con acceso por la bajada de lancha al Riachuelo.",
+    insignias: ["1030 m² de terreno", "176 m² construidos", "Pileta", "Solárium"],
     etiqueta: "Disponible",
     tipo: "Casa",
     precio: "Consultar",
-    superficie: "150 m²",
-    ambientes: 5,
-    destacada: false,
-    // Coordenadas de Italia 234, Corrientes Capital
-    ubicacion: { lat: -27.4882, lng: -58.8265 },
+    superficie: "176 m² construidos",
+    destacada: true,
+    galeria: [
+      img1l55, img2l55, img3l55, img4l55, img5l55, img6l55, img7l55,
+      img8l55, img9l55, img10l55, img11l55, img12l55, img13l55,
+    ],
   },
-  // ── Propiedad 6 ──────────────────────────────
+
+  // ── Propiedad 11: Casa en Venta – Lote 85 ────
   {
-    id: 6,
-    imagen: "https://picsum.photos/seed/colibri-local/800/600",
-    titulo: "Local Comercial",
-    subtitulo: "9 de Julio 800, Corrientes Capital",
+    id: 11,
+    imagen: img4lote85,
+    titulo: "Casa en Venta – Lote 85",
+    subtitulo: "Catalinas Country, Corrientes",
     descripcion:
-      "Local a pie de calle con gran vidriera sobre avenida principal. Ideal para comercio, consultorio o showroom. Instalaciones eléctricas trifásicas incluidas.",
-    insignias: ["Vidriera grande", "Sobre avenida", "Instalación trifásica"],
+      "Moderna casa a estrenar desarrollada sobre un terreno de 1180 m², con 268 m² construidos. La propiedad ofrece 3 habitaciones, 4 baños y un amplio quincho integrado, ideal para reuniones y momentos de descanso. Además, cuenta con pileta y solárium, ubicada en un entorno residencial exclusivo a solo 12 km de Corrientes Capital.",
+    insignias: ["1180 m² de terreno", "268 m² construidos", "3 Habitaciones", "4 Baños", "Quincho", "Pileta", "Solárium"],
     etiqueta: "Disponible",
-    tipo: "Local comercial",
+    tipo: "Casa",
     precio: "Consultar",
-    superficie: "80 m²",
-    destacada: false,
-    // Coordenadas de 9 de Julio 800, Corrientes Capital
-    ubicacion: { lat: -27.4758, lng: -58.8213 },
-  },
-  // ── Propiedad 7 ──────────────────────────────
-  {
-    id: 7,
-    imagen: "https://picsum.photos/seed/colibri-depto1d/800/600",
-    titulo: "Departamento 1 Dormitorio",
-    subtitulo: "Junín 560, Corrientes Capital",
-    descripcion:
-      "Departamento luminoso con dormitorio amplio, living separado y balcón. Edificio con ascensor, seguridad y lavandería. A metros del río Paraná.",
-    insignias: ["Balcón", "Ascensor", "Cerca del río"],
-    etiqueta: "Disponible",
-    tipo: "Departamento",
-    precio: "Consultar",
-    superficie: "52 m²",
-    ambientes: 2,
-    destacada: false,
-    // Coordenadas de Junín 560, Corrientes Capital
-    ubicacion: { lat: -27.4698, lng: -58.8372 },
-  },
-  // ── Propiedad 8 ──────────────────────────────
-  {
-    id: 8,
-    imagen: "https://picsum.photos/seed/colibri-duplex/800/600",
-    titulo: "Dúplex 3 Dormitorios",
-    subtitulo: "Santa Fe 1200, Corrientes Capital",
-    descripcion:
-      "Moderno dúplex de dos plantas con tres dormitorios en suite. Terraza privada, piscina compartida y estacionamiento cubierto. Complejo cerrado con amenities.",
-    insignias: ["Piscina", "Terraza privada", "Complejo cerrado"],
-    etiqueta: "Disponible",
-    tipo: "Dúplex",
-    precio: "Consultar",
-    superficie: "180 m²",
-    ambientes: 5,
-    destacada: false,
-    // Coordenadas de Santa Fe 1200, Corrientes Capital
-    ubicacion: { lat: -27.4825, lng: -58.8142 },
-  },
-  // ── Propiedad 9 ──────────────────────────────
-  {
-    id: 9,
-    imagen: "https://picsum.photos/seed/colibri-oficina/800/600",
-    titulo: "Oficina Corporativa",
-    subtitulo: "Pellegrini 890, Corrientes Capital",
-    descripcion:
-      "Oficina en piso ejecutivo con sala de reuniones incluida. Recepción compartida, WiFi de alta velocidad y estacionamiento. Contrato flexible a largo plazo.",
-    insignias: ["Sala de reuniones", "WiFi incluido", "Estacionamiento"],
-    etiqueta: "Disponible",
-    tipo: "Oficina",
-    precio: "Consultar",
-    superficie: "45 m²",
-    destacada: false,
-    // Coordenadas de Pellegrini 890, Corrientes Capital
-    ubicacion: { lat: -27.4775, lng: -58.8274 },
+    superficie: "268 m² construidos",
+    ambientes: 3,
+    destacada: true,
+    galeria: [
+      img1lote85, img2lote85, img3lote85, img4lote85, img5lote85, img6lote85, img7lote85,
+      img8lote85, img9lote85, img10lote85, img11lote85, img12lote85, img13lote85,
+    ],
   },
 ];
 
@@ -262,6 +230,13 @@ export const propiedadesIniciales: Propiedad[] = [
  */
 export function obtenerPropiedades(): Propiedad[] {
   try {
+    const versionGuardada = localStorage.getItem(CLAVE_VERSION);
+    if (versionGuardada !== DATA_VERSION) {
+      // El catálogo del código es más nuevo: descartamos el caché
+      localStorage.removeItem(CLAVE_ALMACENAMIENTO);
+      localStorage.removeItem(CLAVE_VERSION);
+      return propiedadesIniciales;
+    }
     const guardadas = localStorage.getItem(CLAVE_ALMACENAMIENTO);
     if (guardadas) {
       return JSON.parse(guardadas) as Propiedad[];
@@ -284,6 +259,7 @@ export function obtenerPropiedades(): Propiedad[] {
 export function guardarPropiedades(propiedades: Propiedad[]): void {
   try {
     localStorage.setItem(CLAVE_ALMACENAMIENTO, JSON.stringify(propiedades));
+    localStorage.setItem(CLAVE_VERSION, DATA_VERSION);
   } catch (error) {
     console.error("Error al guardar propiedades en almacenamiento local:", error);
   }

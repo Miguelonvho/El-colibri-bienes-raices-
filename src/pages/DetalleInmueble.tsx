@@ -16,6 +16,7 @@
  * ============================================================
  */
 
+import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -33,6 +34,14 @@ import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import FloatingWhatsApp from "@/components/landing/FloatingWhatsApp";
 import MapaPropiedad from "@/components/MapaPropiedad";
+import LightboxImagenes from "@/components/LightboxImagenes";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+} from "@/components/ui/carousel";
 import { obtenerPropiedad } from "@/data/propiedades";
 
 // Configuración de WhatsApp
@@ -52,6 +61,15 @@ export default function DetalleInmueble() {
 
   // Buscamos la propiedad con ese ID en los datos
   const propiedad = obtenerPropiedad(Number(id));
+
+  // Estado del lightbox de imágenes
+  const [lightboxAbierto, setLightboxAbierto] = useState(false);
+  const [lightboxIndice, setLightboxIndice] = useState(0);
+
+  const abrirLightbox = (indice: number) => {
+    setLightboxIndice(indice);
+    setLightboxAbierto(true);
+  };
 
   // ── Propiedad no encontrada ────────────────────
   if (!propiedad) {
@@ -82,42 +100,10 @@ export default function DetalleInmueble() {
       <Navbar />
 
       <main className="pt-24">
-
-        {/* ── Imagen principal ──────────────────── */}
-        <div className="relative w-full h-72 sm:h-96 lg:h-[520px] overflow-hidden">
-          <img
-            src={propiedad.imagen}
-            alt={propiedad.titulo}
-            className="w-full h-full object-cover"
-          />
-          {/* Gradiente oscuro en la parte inferior de la imagen */}
-          <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-transparent to-transparent" />
-
-          {/* Etiqueta de estado sobre la imagen */}
-          <div className="absolute top-6 left-6 bg-card/90 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse-slow" />
-            {propiedad.etiqueta}
-          </div>
-
-          {/* Título sobre la imagen (visible en la parte inferior) */}
-          <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-10">
-            <div className="max-w-7xl mx-auto">
-              <p className="text-xs font-bold text-primary-foreground/70 uppercase tracking-wider flex items-center gap-1 mb-1">
-                <MapPin size={12} />
-                {propiedad.subtitulo}
-              </p>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-primary-foreground leading-tight">
-                {propiedad.titulo}
-              </h1>
-            </div>
-          </div>
-        </div>
-
-        {/* ── Contenido principal ───────────────── */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
 
           {/* Migas de pan */}
-          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
             <Link to="/" className="flex items-center gap-1 hover:text-primary transition-colors">
               <Home size={14} />
               Inicio
@@ -132,10 +118,69 @@ export default function DetalleInmueble() {
             </span>
           </div>
 
+          {/* Botón volver — debajo de las migas, arriba a la izquierda */}
+          <button
+            onClick={() => navigate(-1)}
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground border border-border rounded-full px-4 py-1.5 hover:text-foreground hover:border-foreground/40 transition-colors mb-8"
+          >
+            <ArrowLeft size={14} />
+            Volver
+          </button>
+
+          {/* Encabezado: dirección + título + etiqueta de estado */}
+          <div className="mb-8">
+            <p className="text-sm text-muted-foreground flex items-center gap-1.5 mb-2">
+              <MapPin size={13} className="text-primary flex-shrink-0" />
+              {propiedad.subtitulo}
+            </p>
+            <div className="flex items-center gap-3 flex-wrap">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-foreground leading-tight">
+                {propiedad.titulo}
+              </h1>
+              <span className="inline-flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider shrink-0">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse-slow" />
+                {propiedad.etiqueta}
+              </span>
+            </div>
+          </div>
+
           <div className="grid lg:grid-cols-3 gap-10">
 
-            {/* ── Columna izquierda: descripción + características ── */}
+            {/* ── Columna izquierda: carrusel + descripción + características ── */}
             <div className="lg:col-span-2 space-y-8">
+
+              {/* Carrusel de imágenes o imagen única */}
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="rounded-2xl overflow-hidden"
+              >
+                {propiedad.galeria && propiedad.galeria.length > 0 ? (
+                  <Carousel opts={{ loop: true }}>
+                    <CarouselContent>
+                      {propiedad.galeria.map((img, i) => (
+                        <CarouselItem key={i}>
+                          <img
+                            src={img}
+                            alt={`${propiedad.titulo} - foto ${i + 1}`}
+                            className="w-full h-[360px] sm:h-[440px] lg:h-[580px] object-cover cursor-zoom-in"
+                            onClick={() => abrirLightbox(i)}
+                          />
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    <CarouselPrevious className="left-3 bg-black/40 border-0 text-white hover:bg-black/60 hover:text-white" />
+                    <CarouselNext className="right-3 bg-black/40 border-0 text-white hover:bg-black/60 hover:text-white" />
+                  </Carousel>
+                ) : (
+                  <img
+                    src={propiedad.imagen}
+                    alt={propiedad.titulo}
+                    className="w-full h-[360px] sm:h-[440px] lg:h-[580px] object-cover"
+                  />
+                )}
+              </motion.div>
 
               {/* Descripción */}
               <motion.div
@@ -149,27 +194,6 @@ export default function DetalleInmueble() {
                 </p>
               </motion.div>
 
-              {/* Insignias / Características */}
-              {propiedad.insignias.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.1 }}
-                >
-                  <h2 className="text-lg font-bold text-foreground mb-3">Características</h2>
-                  <div className="flex flex-wrap gap-3">
-                    {propiedad.insignias.map((insignia) => (
-                      <span
-                        key={insignia}
-                        className="flex items-center gap-2 text-sm font-semibold text-primary bg-primary-light px-4 py-2 rounded-full"
-                      >
-                        <CheckCircle2 size={14} />
-                        {insignia}
-                      </span>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
 
               {/* ── Mapa de ubicación ─────────────────────
                * Solo se muestra si la propiedad tiene coordenadas cargadas.
@@ -205,16 +229,6 @@ export default function DetalleInmueble() {
                 </motion.div>
               )}
 
-              {/* Botón de volver (móvil: visible aquí; desktop: en sidebar) */}
-              <div className="lg:hidden">
-                <button
-                  onClick={() => navigate(-1)}
-                  className="flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <ArrowLeft size={16} />
-                  Volver
-                </button>
-              </div>
             </div>
 
             {/* ── Columna derecha: ficha técnica + CTA ── */}
@@ -280,6 +294,24 @@ export default function DetalleInmueble() {
                 </ul>
               </div>
 
+              {/* Características / Insignias */}
+              {propiedad.insignias.length > 0 && (
+                <div className="bg-card rounded-3xl border border-border shadow-card p-6">
+                  <h2 className="text-base font-bold text-foreground mb-4">Características</h2>
+                  <div className="flex flex-wrap gap-2">
+                    {propiedad.insignias.map((insignia) => (
+                      <span
+                        key={insignia}
+                        className="flex items-center gap-1.5 text-sm font-semibold text-primary bg-primary/10 px-3 py-1.5 rounded-full"
+                      >
+                        <CheckCircle2 size={13} />
+                        {insignia}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* CTA: consultar por WhatsApp */}
               <a
                 href={WA_LINK(propiedad.titulo, propiedad.subtitulo)}
@@ -290,23 +322,6 @@ export default function DetalleInmueble() {
                 <MessageCircle size={20} />
                 Consultar disponibilidad
               </a>
-
-              {/* Navegación de volver (desktop) */}
-              <div className="hidden lg:flex flex-col gap-2">
-                <button
-                  onClick={() => navigate(-1)}
-                  className="flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <ArrowLeft size={15} />
-                  Volver
-                </button>
-                <Link
-                  to="/catalogo"
-                  className="text-sm font-semibold text-primary hover:underline"
-                >
-                  Ver catálogo completo →
-                </Link>
-              </div>
             </motion.div>
           </div>
         </div>
@@ -314,6 +329,16 @@ export default function DetalleInmueble() {
 
       <Footer />
       <FloatingWhatsApp />
+
+      {/* Lightbox: se monta en document.body vía portal */}
+      {propiedad.galeria && (
+        <LightboxImagenes
+          imagenes={propiedad.galeria}
+          indiceInicial={lightboxIndice}
+          abierto={lightboxAbierto}
+          onCerrar={() => setLightboxAbierto(false)}
+        />
+      )}
     </div>
   );
 }

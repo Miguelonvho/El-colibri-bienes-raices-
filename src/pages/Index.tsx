@@ -8,6 +8,7 @@ import FAQ from "@/components/landing/FAQ";
 import ContactCTA from "@/components/landing/ContactCTA";
 import FloatingWhatsApp from "@/components/landing/FloatingWhatsApp";
 import Footer from "@/components/landing/Footer";
+import { SECCIONES } from "@/config/secciones";
 
 export default function Index() {
   return (
@@ -16,11 +17,11 @@ export default function Index() {
       <main>
         <Hero />
         <Properties />
-        <About />
-        <WhyUs />
-        <Testimonials />
-        <FAQ />
-        <ContactCTA />
+        {SECCIONES.nosotros && <About />}
+        {SECCIONES.porQueElegirnos && <WhyUs />}
+        {SECCIONES.testimonios && <Testimonials />}
+        {SECCIONES.preguntas && <FAQ />}
+        {SECCIONES.contacto && <ContactCTA />}
       </main>
       <Footer />
       <FloatingWhatsApp />

@@ -58,6 +58,7 @@ import Catalogo from "./pages/Catalogo.tsx";
 import DetalleInmueble from "./pages/DetalleInmueble.tsx";
 import GestionCatalogo from "./pages/GestionCatalogo.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import { gestionHabilitada } from "./config/admin.ts";
 
 const queryClient = new QueryClient();
 
@@ -79,11 +80,10 @@ const App = () => (
           {/* Detalle de una propiedad individual */}
           <Route path="/inmueble/:id" element={<DetalleInmueble />} />
 
-          {/*
-           * Panel de gestión del catálogo (solo administrador)
-           * TODO: Reemplazar por <RutaProtegida> cuando haya autenticación
-           */}
-          <Route path="/gestion" element={<GestionCatalogo />} />
+          {/* Panel de gestión — solo existe si gestionHabilitada = true en config/admin.ts */}
+          {gestionHabilitada && (
+            <Route path="/gestion" element={<GestionCatalogo />} />
+          )}
 
           {/* Ruta 404 — debe ir siempre al final */}
           <Route path="*" element={<NotFound />} />

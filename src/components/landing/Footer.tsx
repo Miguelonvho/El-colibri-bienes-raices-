@@ -10,6 +10,7 @@
 import { MessageCircle, MapPin, Phone, Instagram } from "lucide-react";
 import { Link } from "react-router-dom";
 import logoElColibri from "@/assets/logo-el-colibri.png";
+import { SECCIONES } from "@/config/secciones";
 
 // Enlace de WhatsApp directo
 const whatsappNumber = "543794215684";
@@ -39,14 +40,14 @@ export default function Footer() {
           <div>
             <h4 className="text-background font-bold text-sm mb-4">Navegación</h4>
             <ul className="space-y-2 text-sm">
-              {/* Links de secciones de la landing */}
+              {/* Links de secciones — solo las habilitadas en config/secciones.ts */}
               {[
-                { label: "Propiedades", href: "/#propiedades" },
-                { label: "Nosotros", href: "/#nosotros" },
-                { label: "Por qué elegirnos", href: "/#beneficios" },
-                { label: "Preguntas frecuentes", href: "/#faq" },
-                { label: "Contacto", href: "/#contacto" },
-              ].map((l) => (
+                { label: "Propiedades", href: "/#propiedades", visible: true },
+                { label: "Nosotros", href: "/#nosotros", visible: SECCIONES.nosotros },
+                { label: "Por qué elegirnos", href: "/#beneficios", visible: SECCIONES.porQueElegirnos },
+                { label: "Preguntas frecuentes", href: "/#faq", visible: SECCIONES.preguntas },
+                { label: "Contacto", href: "/#contacto", visible: SECCIONES.contacto },
+              ].filter((l) => l.visible).map((l) => (
                 <li key={l.href}>
                   <a href={l.href} className="hover:text-primary transition-colors">
                     {l.label}
@@ -56,7 +57,6 @@ export default function Footer() {
 
               {/* Separador */}
               <li className="border-t border-background/10 pt-2 mt-2">
-                {/* Link interno: Catálogo (usa React Router para evitar recarga) */}
                 <Link to="/catalogo" className="hover:text-primary transition-colors">
                   Catálogo completo
                 </Link>

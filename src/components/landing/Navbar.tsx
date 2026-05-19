@@ -16,9 +16,10 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle, Menu, X, LayoutGrid, Settings } from "lucide-react";
+import { MessageCircle, Menu, X, LayoutGrid } from "lucide-react";
 import { Link } from "react-router-dom";
 import logoElColibri from "@/assets/logo-el-colibri.png";
+import { SECCIONES } from "@/config/secciones";
 
 // Configuración del enlace de WhatsApp
 const whatsappNumber = "543794215684";
@@ -40,22 +41,22 @@ export default function Navbar() {
 
   /**
    * Links de ancla: apuntan a secciones de la landing.
-   * Desde otras páginas, el navegador irá a /#seccion y luego hará scroll.
+   * Solo se incluyen las secciones habilitadas en `src/config/secciones.ts`.
    */
   const linksSeccion = [
-    { label: "Inicio", href: "/#propiedades" },
-    { label: "Nosotros", href: "/#nosotros" },
-    { label: "Por qué elegirnos", href: "/#beneficios" },
-    { label: "Preguntas", href: "/#faq" },
-  ];
+    { label: "Inicio", href: "/#propiedades", visible: true },
+    { label: "Nosotros", href: "/#nosotros", visible: SECCIONES.nosotros },
+    { label: "Por qué elegirnos", href: "/#beneficios", visible: SECCIONES.porQueElegirnos },
+    { label: "Preguntas", href: "/#faq", visible: SECCIONES.preguntas },
+    { label: "Contacto", href: "/#contacto", visible: SECCIONES.contacto },
+  ].filter((l) => l.visible);
 
   /**
    * Links de rutas internas del sitio (usan React Router).
-   * Agregar aquí nuevas páginas según se desarrollen.
+   * Gestión se omite intencionalmente — acceso solo por URL directa con clave.
    */
   const linksRutas = [
     { label: "Catálogo", to: "/catalogo", icono: <LayoutGrid size={15} /> },
-    { label: "Gestión", to: "/gestion", icono: <Settings size={15} /> },
   ];
 
   return (
