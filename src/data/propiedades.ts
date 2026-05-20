@@ -56,7 +56,7 @@ const CLAVE_ALMACENAMIENTO = "colibri_propiedades";
  * en `propiedadesIniciales`. Al detectar un desajuste con lo guardado en
  * localStorage, el sistema descarta el caché y carga los datos nuevos.
  */
-const DATA_VERSION = "3";
+const DATA_VERSION = "4";
 const CLAVE_VERSION = "colibri_version";
 
 // ─────────────────────────────────────────────
@@ -193,6 +193,8 @@ export const propiedadesIniciales: Propiedad[] = [
       img1l55, img2l55, img3l55, img4l55, img5l55, img6l55, img7l55,
       img8l55, img9l55, img10l55, img11l55, img12l55, img13l55,
     ],
+    // Coordenadas de Catalinas Country, Corrientes
+    ubicacion: { lat: -27.559305, lng: -58.751249 },
   },
 
   // ── Propiedad 11: Casa en Venta – Lote 85 ────
@@ -214,6 +216,8 @@ export const propiedadesIniciales: Propiedad[] = [
       img1lote85, img2lote85, img3lote85, img4lote85, img5lote85, img6lote85, img7lote85,
       img8lote85, img9lote85, img10lote85, img11lote85, img12lote85, img13lote85,
     ],
+    // Coordenadas de Catalinas Country, Corrientes
+    ubicacion: { lat: -27.559305, lng: -58.751249 },
   },
 ];
 
