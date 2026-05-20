@@ -213,7 +213,7 @@ export const propiedadesIniciales: Propiedad[] = [
     ambientes: 3,
     destacada: true,
     galeria: [
-      img1lote85, img2lote85, img3lote85, img4lote85, img5lote85, img6lote85, img7lote85,
+      img4lote85, img1lote85, img2lote85, img3lote85, img5lote85, img6lote85, img7lote85,
       img8lote85, img9lote85, img10lote85, img11lote85, img12lote85, img13lote85,
     ],
     // Coordenadas de Catalinas Country, Corrientes
